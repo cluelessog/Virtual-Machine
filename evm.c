@@ -236,79 +236,35 @@ struct PU Core1 = {
 
 unsigned char MEM[MEM_SIZE] = {
     //code for BOOT()
-    IN, IO_NUM, R1,  //read KSTART
+    IN, IO_NUM, R1,  //read KSTART(start address for kernel instructions(57 in my case)
     IN, IO_NUM, R2, //read KLEN
-    MOV, num_(VARS), R3,
-    ATP, R1, R3,
-    MOV, R1, R7,
-    MPC, R4,
-    IN , IO_NUM, R5,
-    ATP, R5, R7,
-    ADD, N1, R7,
-    SUB, N1, R2,
-    JIF, FL_ZERO, R4,
+    MOV, num_(VARS), R3, //r3 = &MEM[vars]
+    ATP, R1, R3,       // stored KSTART(start address of kernel code)into location 124(data section) because during loading
+                        //Register R1 will be cleared, hence storing address in data part.
+    MOV, R1, R7,    //using R7 as temporary register to store KSTART
+    MPC, R4,        //pc content into R4 to jump back here
+    IN , IO_NUM, R5,    //read Instruction
+    ATP, R5, R7,        //*r7++ = r5
+    ADD, N1, R7,        // r7++
+    SUB, N1, R2,        //r2--
+    JIF, FL_ZERO, R4,   //if !zf jump R4
 
-    MPC, R5,
-    MOV, num_(GREET), R7,
-    ATP, R5, R7,
-    ADD, N1, R7,
+    MPC, R5,            
+    MOV, num_(GREET), R7,   //r7 = &MEM[greet]
+    ATP, R5, R7,            //*r7++ = r5
+    ADD, N1, R7,            //r7++
     //warmboot
     //reading a and b
     IN, IO_NUM, R2,  //a
     IN, IO_NUM, R6, //b
-    MOV, num_(54), R3,    
+    MOV, num_(54), R3,      //r3 = &MEM[54]
     //jumping to KSTART
     JMR, addr_(VARS),   
+    //results of computation are stored at location 121
     //KEXIT
     SUS,
     JMR, addr_(GREET), //jump to warmboot
 
-
-
-    
-    // put out greeting
-//	MOV,  addr_(GREET), R2,		// r2 = len
-//	MOV,  num_(GREET+1), R0,	// r0 = add
-//	MPC,  R3,			// r3 = pc
-//	AT,   R0,      R1,		// r1 = mem[r0++]
-//	ADD,  N1,      R0,
-//	OUT,  IO_CHR,  R1,		// out[1] = r1
-//	SUB,  N1,      R2,		// r2--
-//	JIF,  FL_ZERO, R3,		// if !zf jump r3
-
-	// read in a,b
-//	IN,   IO_NUM,  R1,
-//	IN,   IO_NUM,  R2,
-
-	// save a,b
-//	MOV,  num_(VARS), R7,	// r7 = &MEM[vars]
-//	ATP,  R1,       R7,	// *r7++ = r1.
-//	ADD,  N1,       R7,
-  //  ATP,  R2,       R7,	// *r7++ = r2.
-//	ADD,  N1,       R7,
-//	// compute a+b
-//	MOV,  R1,	R3,
-//	ADD,  R2,       R3,
-//	ATP,  R3,       R7,
-//	ADD,  N1,       R7,
-//	OUT,  IO_NUM,  R3,
-
-	// compute a*b
-//	SUB,  R0, R0,
-//	MPC,  R3,
-//	ADD,  R1,       R0,
-//	SUB,  N1,  	R2,
-//	JIF,  FL_ZERO,  R3,
-//	ATP,  R0,  	R7,
-//	ADD,  N1,       R7,
-//	OUT,  IO_NUM,  R0,
-//	SUS,
-//	JMR,  addr_(0),		// warm restart
-
-	// literals section
-//	[GREET] = GREET_SIZE, 'D', '>', ' ',
-
-	// variables section
 	[VARS] = 0, 0, 0, 0,
 
 };

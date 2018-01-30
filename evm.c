@@ -235,6 +235,8 @@ struct PU Core1 = {
 #endif
 
 unsigned char MEM[MEM_SIZE] = {
+    //my KSTART address ins 57 and the function I computed is multiplication
+    //which in my case is 25 length instruction. The output is stored at location 121
     //code for BOOT()
     IN, IO_NUM, R1,  //read KSTART(start address for kernel instructions(57 in my case)
     IN, IO_NUM, R2, //read KLEN

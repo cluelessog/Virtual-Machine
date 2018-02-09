@@ -250,16 +250,15 @@ unsigned char MEM[MEM_SIZE] = {
     ADD, N1, R7,        // r7++
     SUB, N1, R2,        //r2--
     JIF, FL_ZERO, R4,   //if !zf jump R4
-
-    MPC, R5,            
-    MOV, num_(GREET), R7,   //r7 = &MEM[greet]
-    ATP, R5, R7,            //*r7++ = r5
-    ADD, N1, R7,            //r7++
+    
+    MPC, addr_(GREET),            
+   
     //warmboot
     //reading a and b
+    MOV, num_(GREET+1), R7,   //r7 = &MEM[greet]
     IN, IO_NUM, R2,  //a
     IN, IO_NUM, R6, //b
-    MOV, num_(54), R3,      //r3 = &MEM[54]
+    MOV, num_(48), R3,      //r3 = &MEM[54]
     //jumping to KSTART
     JMR, addr_(VARS),   
     //results of computation are stored at location 121
@@ -267,7 +266,6 @@ unsigned char MEM[MEM_SIZE] = {
     SUS,
     JMR, addr_(GREET), //jump to warmboot
 
-	[VARS] = 0, 0, 0, 0,
 
 };
 
